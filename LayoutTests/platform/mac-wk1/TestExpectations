@@ -2668,6 +2668,11 @@ imported/w3c/web-platform-tests/css/css-tables/collapsed-border-positioned-tr-td
 http/tests/resourceLoadStatistics/website-data-removal-for-site-without-user-interaction-js-cookie-checking.html [ Skip ]
 http/tests/resourceLoadStatistics/website-data-removal-for-site-navigated-to-with-link-decoration-js-cookie-checking.html [ Skip ]
 
+# third-party cookie blocking is not supported in WK1
+http/tests/navigation/ping-attribute/cross-site-url-anchor-cookie-preexisting-cookie.html [ Skip ]
+http/tests/navigation/ping-attribute/cross-site-url-anchor-cookie.html [ Skip ]
+http/tests/websocket/tests/hybi/websocket-allowed-setting-cookie-as-third-party-with-third-party-cookie-blocking.https.html [ Skip ]
+
 # Site-isolation isn't supported in WK1
 http/tests/site-isolation [ Skip ]
 
