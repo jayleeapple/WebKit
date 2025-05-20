@@ -3062,3 +3062,5 @@ webkit.org/b/287973 imported/w3c/web-platform-tests/css/css-grid/grid-definition
 webkit.org/b/215773 http/tests/websocket/tests/hybi/client-close-2.html [ Pass Failure ]
 
 webkit.org/b/287976 imported/w3c/web-platform-tests/css/css-box/margin-trim/computed-margin-values/block-container-block-start-self-collapsing-nested.html [ Pass Failure ]
+
+webkit.org/b/289382 fast/canvas/offscreen-no-script-context-crash.html [ Skip ]
