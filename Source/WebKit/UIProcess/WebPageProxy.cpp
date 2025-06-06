@@ -4987,8 +4987,8 @@ Ref<WebPageProxy> WebPageProxy::downloadOriginatingPage(const API::Navigation* n
 {
     if (!navigation)
         return *this;
-    auto frameInfo = navigation->originatingFrameInfo();
-    return navigationOriginatingPage(frameInfo);
+    auto& frameInfo = navigation->originatingFrameInfo();
+    return navigationOriginatingPage(*frameInfo);
 }
 
 Ref<WebPageProxy> WebPageProxy::navigationOriginatingPage(const std::optional<FrameInfoData>& frameInfo)
@@ -5018,7 +5018,13 @@ void WebPageProxy::receivedPolicyDecision(PolicyAction action, API::Navigation* 
     std::optional<DownloadID> downloadID;
     if (action == PolicyAction::Download) {
         // Create a download proxy.
-        auto download = m_configuration->protectedProcessPool()->createDownloadProxy(m_websiteDataStore, navigationAction->request(), downloadOriginatingPage(navigation).ptr(), navigation ? std::optional(navigation->originatingFrameInfo()) : std::optional(navigationAction->data().originatingFrameInfoData));
+        RefPtr<DownloadProxy> download;
+
+        if (navigation && (navigation->targetItem() || navigation->isRequestFromClientOrUserInput()))
+            download = m_configuration->protectedProcessPool()->createDownloadProxy(m_websiteDataStore, navigationAction->request(), downloadOriginatingPage(navigation).ptr(), std::nullopt);
+        else
+            download = m_configuration->protectedProcessPool()->createDownloadProxy(m_websiteDataStore, navigationAction->request(), downloadOriginatingPage(navigation).ptr(), navigation ? navigation->originatingFrameInfo() : std::optional(navigationAction->data().originatingFrameInfoData));
+
         download->setDidStartCallback([weakThis = WeakPtr { *this }, navigationAction = WTFMove(navigationAction)] (auto* downloadProxy) {
             RefPtr protectedThis = weakThis.get();
             if (!protectedThis || !downloadProxy)
@@ -5055,7 +5061,13 @@ void WebPageProxy::receivedNavigationResponsePolicyDecision(WebCore::PolicyActio
 
     std::optional<DownloadID> downloadID;
     if (action == PolicyAction::Download) {
-        auto download = m_configuration->protectedProcessPool()->createDownloadProxy(m_websiteDataStore, request, downloadOriginatingPage(navigation).ptr(), navigation ? std::optional(navigation->originatingFrameInfo()) : std::nullopt);
+        RefPtr<DownloadProxy> download;
+
+        if (navigation && (navigation->targetItem() || navigation->isRequestFromClientOrUserInput()))
+            download = m_configuration->protectedProcessPool()->createDownloadProxy(m_websiteDataStore, request, downloadOriginatingPage(navigation).ptr(), std::nullopt);
+        else
+            download = m_configuration->protectedProcessPool()->createDownloadProxy(m_websiteDataStore, request, downloadOriginatingPage(navigation).ptr(), navigation ? navigation->originatingFrameInfo() : std::nullopt);
+
         download->setDidStartCallback([weakThis = WeakPtr { *this }, navigationResponse = WTFMove(navigationResponse)] (auto* downloadProxy) {
             RefPtr protectedThis = weakThis.get();
             if (!protectedThis || !downloadProxy)
@@ -7839,7 +7851,7 @@ void WebPageProxy::decidePolicyForNavigationAction(Ref<WebProcessProxy>&& proces
 
     RefPtr mainFrameNavigation = frame.isMainFrame() ? navigation.get() : nullptr;
     RefPtr originatingFrame = WebFrameProxy::webFrame(navigation->originatingFrameInfo()->frameID);
-    Ref sourceFrameInfo = API::FrameInfo::create(FrameInfoData { *navigation->originatingFrameInfo() }, navigationOriginatingPage(navigation->originatingFrameInfo()));
+    Ref sourceFrameInfo = API::FrameInfo::create(FrameInfoData { *navigation->originatingFrameInfo() }, navigationOriginatingPage(*navigation->originatingFrameInfo()));
 
     bool sourceAndDestinationEqual = originatingFrame == &frame
         || (originatingFrame == mainFrame() && m_provisionalPage && m_provisionalPage->mainFrame() == &frame);
@@ -16291,3 +16303,4 @@ void WebPageProxy::resetViewportConfigurationForPDFPluginIfNeeded()
 #undef MESSAGE_CHECK_COMPLETION
 #undef MESSAGE_CHECK_URL
 #undef MESSAGE_CHECK
+
