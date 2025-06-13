@@ -8462,6 +8462,9 @@ void WebPageProxy::createNewPage(IPC::Connection& connection, WindowFeatures&& w
             return;
         }
 
+        if (RefPtr pageClient = this->pageClient())
+            pageClient->dismissAnyOpenPicker();
+
         newPage->setOpenedByDOM();
 
         if (openerAppInitiatedState)
