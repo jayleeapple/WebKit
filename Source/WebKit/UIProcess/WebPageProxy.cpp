@@ -2010,7 +2010,7 @@ Ref<WebProcessProxy> WebPageProxy::ensureProtectedRunningProcess()
     return ensureRunningProcess();
 }
 
-RefPtr<API::Navigation> WebPageProxy::loadRequest(WebCore::ResourceRequest&& request, ShouldOpenExternalURLsPolicy shouldOpenExternalURLsPolicy, IsPerformingHTTPFallback isPerformingHTTPFallback, std::unique_ptr<NavigationActionData>&& lastNavigationAction, API::Object* userData)
+RefPtr<API::Navigation> WebPageProxy::loadRequest(WebCore::ResourceRequest&& request, ShouldOpenExternalURLsPolicy shouldOpenExternalURLsPolicy, IsPerformingHTTPFallback isPerformingHTTPFallback, std::unique_ptr<NavigationActionData>&& lastNavigationAction, API::Object* userData, bool isRequestFromClientOrUserInput)
 {
     if (m_isClosed)
         return nullptr;
@@ -2031,7 +2031,7 @@ RefPtr<API::Navigation> WebPageProxy::loadRequest(WebCore::ResourceRequest&& req
         navigation->setLastNavigationAction(*lastNavigationAction);
 
     auto navigationData = navigation->lastNavigationAction();
-    navigationData.isRequestFromClientOrUserInput = true;
+    navigationData.isRequestFromClientOrUserInput = isRequestFromClientOrUserInput;
     navigation->setLastNavigationAction(WTFMove(navigationData));
 
     if (shouldForceForegroundPriorityForClientNavigation())
@@ -8485,8 +8485,10 @@ void WebPageProxy::createNewPage(IPC::Connection& connection, WindowFeatures&& w
         newPage->m_shouldSuppressAppLinksInNextNavigationPolicyDecision = mainFrameURL.host() == request.url().host();
 
         if (navigationDataForNewProcess && !openedBlobURL) {
+            bool isRequestFromClientOrUserInput = navigationDataForNewProcess->isRequestFromClientOrUserInput;
+
             reply(std::nullopt, std::nullopt);
-            newPage->loadRequest(WTFMove(request), shouldOpenExternalURLsPolicy, IsPerformingHTTPFallback::No, WTFMove(navigationDataForNewProcess));
+            newPage->loadRequest(WTFMove(request), shouldOpenExternalURLsPolicy, IsPerformingHTTPFallback::No, WTFMove(navigationDataForNewProcess), nullptr, isRequestFromClientOrUserInput);
             return;
         }
 
