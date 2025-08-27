@@ -94,6 +94,9 @@
             "testDoubleClick": {
                 "expected": {"wpe": {"status": ["FAIL"], "bug": "webkit.org/b/174674"}}
             },
+            "test_context_click": {
+                "expected": {"all": {"status": ["FAIL"], "bug": "webkit.org/b/272354"}}
+            },
             "testSelectingMultipleItems": {
                 "expected": {"all": {"status": ["FAIL"], "bug": "webkit.org/b/184967"}}
             },
