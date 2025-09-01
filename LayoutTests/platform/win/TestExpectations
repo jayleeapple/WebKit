@@ -4480,3 +4480,7 @@ fast/css/text-underline-offset-repaint.html [ Skip ] # Failure
 fast/flexbox/missing-repaint-when-flext-item-never-had-layout.html [ Skip ] # Failure
 
 webkit.org/b/285033 http/tests/download/sandboxed-iframe-download-not-allowed.html [ Failure ]
+
+# Now that partial fonts are working, two characters previously rendered as a square are now showing correctly, which makes the test fail. 
+# Probably the test should be updated.
+fast/text/text-combine-placement.html [ Failure ]
