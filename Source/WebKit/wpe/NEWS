@@ -1,3 +1,20 @@
+==================
+WPE WebKit 2.49.90
+==================
+
+What's new in WPE WebKit 2.49.90?
+
+  - Add support for font collection / fragment identifiers.
+  - Add basic undo-redo support for input elements.
+  - Do not start the MemoryPressureMonitor when it is disabled.
+  - Allow using a system-wide PulseAudio daemon from the Bubblewrap sandbox.
+  - Disable the MediaSession API on Android.
+  - Fix building with USE_EXTERNAL_HOLEPUNCH enabled.
+  - Fix Web process deadlock on exit.
+  - Fix stuttering when playing WebP animations
+  - Fix CSS animations with cubic-bezier timing function.
+  - Fix several crashes and rendering issues.
+
 =================
 WPE WebKit 2.49.4
 =================
